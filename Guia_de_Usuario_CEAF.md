@@ -39,3 +39,18 @@ Aquí es donde consolidas y envías todo el esfuerzo recolectado en tu jornada.
 ---
 
 > 💡 **Nota Importante:** Recuerda que para que el GPS de la Fase 2 funcione correctamente, debes permitir (cuando tu celular lo pregunte) que la aplicación acceda a la **"Ubicación Precisa"** que entrega la señal de los satélites.
+
+---
+
+## 📥 Instrucciones de Instalación (Desde Google Drive)
+
+Para instalar o actualizar esta aplicación en cualquier celular o tablet Android del equipo, sigan estos sencillos pasos:
+
+1. **Abre Google Drive** en la Tablet/Celular y entra a la carpeta compartida donde está alojado el archivo.
+2. Toca el archivo llamado **`app-release.apk`** (o similar terminación `.apk`).
+3. Comenzará a descargar. Una vez descargado, el sistema te preguntará si deseas instalarlo. Toca **"Instalar"**.
+4. **⚠️ Posible Mensaje de Seguridad:** Si es la primera vez que instalas una app por este medio, tu celular te advertirá que *"No tienes permisos para instalar aplicaciones desconocidas"*.
+   - Selecciona **"Configuración"** (o Ajustes) en ese mismo aviso.
+   - Activa el interruptor que dice **"Permitir desde esta fuente"** (o "Confiar en Google Drive").
+   - Presiona la flecha de **"Atrás"** y vuelve a tocar **"Instalar"**.
+5. ¡Listo! La app *"Encuestas CEAF"* aparecerá junto a las otras aplicaciones de tu dispositivo.
