@@ -1,7 +1,10 @@
 import { Redirect, Route } from 'react-router-dom';
-import { IonApp, IonRouterOutlet, setupIonicReact } from '@ionic/react';
+import { IonApp, IonRouterOutlet, IonTabBar, IonTabButton, IonTabs, IonIcon, IonLabel, setupIonicReact } from '@ionic/react';
 import { IonReactRouter } from '@ionic/react-router';
-import Home from './pages/Home';
+import { documentTextOutline, addCircleOutline, barChartOutline } from 'ionicons/icons';
+import TabGestor from './pages/TabGestor';
+import TabRecolector from './pages/TabRecolector';
+import TabResultados from './pages/TabResultados';
 
 /* Core CSS required for Ionic components to work properly */
 import '@ionic/react/css/core.css';
@@ -36,22 +39,69 @@ import './theme/variables.css';
 setupIonicReact();
 
 import { SurveyProvider } from './context/SurveyContext';
+import { TutorialModal } from './components/TutorialModal';
+import { Preferences } from '@capacitor/preferences';
+import { useEffect, useState } from 'react';
 
-const App: React.FC = () => (
-  <IonApp>
-    <SurveyProvider>
-      <IonReactRouter>
-        <IonRouterOutlet>
-          <Route exact path="/home">
-            <Home />
-          </Route>
-          <Route exact path="/">
-            <Redirect to="/home" />
-          </Route>
-        </IonRouterOutlet>
-      </IonReactRouter>
-    </SurveyProvider>
-  </IonApp>
-);
+const App: React.FC = () => {
+  const [showTutorial, setShowTutorial] = useState(false);
+
+  useEffect(() => {
+    const checkTutorial = async () => {
+      const { value } = await Preferences.get({ key: 'hasSeenTutorial' });
+      if (value !== 'true') {
+        setShowTutorial(true);
+      }
+    };
+    checkTutorial();
+  }, []);
+
+  return (
+    <IonApp>
+      <SurveyProvider>
+        <IonReactRouter>
+          <IonTabs>
+            <IonRouterOutlet>
+              <Route exact path="/tab-gestor">
+                <TabGestor />
+              </Route>
+              <Route exact path="/tab-recolector">
+                <TabRecolector />
+              </Route>
+              <Route exact path="/tab-resultados">
+                <TabResultados />
+              </Route>
+              <Route exact path="/">
+                <Redirect to="/tab-gestor" />
+              </Route>
+            </IonRouterOutlet>
+
+            <IonTabBar slot="bottom">
+              <IonTabButton tab="tab-gestor" href="/tab-gestor">
+                <IonIcon icon={addCircleOutline} />
+                <IonLabel>Plantillas</IonLabel>
+              </IonTabButton>
+
+              <IonTabButton tab="tab-recolector" href="/tab-recolector">
+                <IonIcon icon={documentTextOutline} />
+                <IonLabel>Toma Datos</IonLabel>
+              </IonTabButton>
+
+              <IonTabButton tab="tab-resultados" href="/tab-resultados">
+                <IonIcon icon={barChartOutline} />
+                <IonLabel>Resultados</IonLabel>
+              </IonTabButton>
+            </IonTabBar>
+          </IonTabs>
+        </IonReactRouter>
+
+        <TutorialModal 
+          isOpen={showTutorial} 
+          onDismiss={() => setShowTutorial(false)} 
+        />
+      </SurveyProvider>
+    </IonApp>
+  );
+};
 
 export default App;
