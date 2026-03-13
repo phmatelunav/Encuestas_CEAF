@@ -5,7 +5,7 @@ import {
     IonItemDivider, IonModal, IonHeader, IonToolbar, IonTitle, IonButtons, IonContent, IonAlert,
     IonReorderGroup, IonReorder, ItemReorderEventDetail
 } from '@ionic/react';
-import { trashOutline, addOutline, createOutline } from 'ionicons/icons';
+import { trashOutline, addOutline, createOutline, copyOutline } from 'ionicons/icons';
 import { nanoid } from 'nanoid';
 import { useSurveyContext } from '../context/SurveyContext';
 import { Question, QuestionType, SurveyTemplate } from '../types';
@@ -69,6 +69,25 @@ export const SurveyList: React.FC = () => {
         setEditingId(null);
     };
 
+    const handleDuplicateTemplate = (template: SurveyTemplate) => {
+        // Deep copy the original template to avoid any reference mutations
+        const clonedQuestions: Question[] = JSON.parse(JSON.stringify(template.questions));
+        
+        // Regenerate unique IDs for all cloned questions to prevent React/State key collisions
+        const newQuestions = clonedQuestions.map(q => ({
+            ...q,
+            id: nanoid()
+        }));
+
+        const duplicateTemplate: SurveyTemplate = {
+            id: nanoid(),
+            title: `${template.title} (Copia)`,
+            questions: newQuestions
+        };
+
+        addTemplate(duplicateTemplate);
+    };
+
     return (
         <IonCard>
             <IonCardHeader>
@@ -84,6 +103,9 @@ export const SurveyList: React.FC = () => {
                                 <IonLabel>{t.title} ({t.questions.length} preg.)</IonLabel>
                                 <IonButton fill="clear" color="primary" onClick={() => handleEditTemplate(t)}>
                                     <IonIcon slot="icon-only" icon={createOutline} />
+                                </IonButton>
+                                <IonButton fill="clear" color="secondary" onClick={() => handleDuplicateTemplate(t)}>
+                                    <IonIcon slot="icon-only" icon={copyOutline} />
                                 </IonButton>
                                 <IonButton fill="clear" color="danger" onClick={() => setTemplateToDelete(t.id)}>
                                     <IonIcon slot="icon-only" icon={trashOutline} />
