@@ -1,22 +1,26 @@
-# App Encuestas CEAF (Offline)
+# App Encuestas CEAF (Versión 13 - Final)
 
-Esta es una aplicación móvil nativa diseñada y desarrollada exclusivamente para el **Centro de Estudios Avanzados en Fruticultura (CEAF)**. Su propósito principal es permitir la creación dinámica y toma de encuestas en terreno en modalidad **100% Offline**.
+Esta es una aplicación móvil nativa diseñada y desarrollada exclusivamente para el **Centro de Estudios Avanzados en Fruticultura (CEAF)**. Su propósito principal es permitir la creación dinámica, gestión de usuarios y toma de encuestas en terreno en modalidad **100% Offline**.
 
 ## Características Principales
 
-* **Desarrollo Offline-First**: Todo el almacenamiento de plantillas, configuración y respuestas recolectadas opera internamente de manera local (`localStorage`), permitiendo utilizar la herramienta en zonas rurales sin cobertura de internet.
-* **Componentes Dinámicos**: Permite al encuestador crear encuestas personalizadas asignando títulos, y preguntas de diferentes tipos (Texto Libre, Números, Opción Múltiple).
-* **Gestión Drag & Drop**: Ordenamiento interactivo de las preguntas dentro de las plantillas utilizando herramientas arrastrables nativas (`IonReorder`).
-* **Captura de Coordenadas GPS**: Extrae la posición (Latitud y Longitud) de manera invisible y silenciosa en el momento exacto en que se toma la respuesta de la encuesta.
-* **Adjunto de Fotografías (Universal)**: Integración segura con cámara del dispositivo para añadir ilimitadas evidencias fotográficas a cualquier ficha llenada.
-* **Procesamiento Óptico OCR (Inteligente)**: Para las plantillas denominadas "Programa de Riego", se activa un motor de Inteligencia Artificial on-device mediante **Google ML-Kit**, capaz de escanear hojas físicas mediante la cámara y llenar automáticamente todas las respuestas interpretando marcas en las casillas.
-* **Exportación Consolidada**: Genera instantáneamente un archivo `.zip` comprimido conteniendo un Excel `.xlsx` estructurado por filas (encuestas) y columnas (campos/GPS), además de una carpeta anexada con todas las `.jpg` tomadas.
-* **Tutorial Inicial**: Flujo amigable on-boarding que utiliza `@capacitor/preferences` para recordar a los nuevos usuarios cómo manejar los tres pilares del aplicativo la primera vez que se abre en el dispositivo.
+* **Desarrollo Offline-First**: Todo el almacenamiento de plantillas, usuarios y respuestas recolectadas opera internamente de manera local (`localStorage`), permitiendo utilizar la herramienta en zonas rurales sin cobertura de internet.
+* **Precarga de Datos (CSV Integrado)**: La App incluye de fábrica toda la base de datos de usuarios (`DB_Usuarios.csv`) y el cuestionario técnico base CEAF (`Cuestionario.csv`), permitiendo operar desde el primer segundo sin configuraciones manuales.
+* **Gestión de Usuarios / Entrevistados**: Nueva pestaña dedicada para Administrar (Crear, Editar, Eliminar) el directorio sociodemográfico de las personas a encuestar, manteniendo un orden alfabético para una búsqueda ágil.
+* **Toma de Datos con Auto-Carga**: Al seleccionar un usuario que ya ha sido encuestado anteriormente, la App detecta el registro y **autocompleta** automáticamente todas las respuestas y fotografías previas, permitiendo corregir o actualizar la información sobre la marcha sin duplicar datos.
+* **Componentes Dinámicos & Drag-Drop**: Permite crear encuestas personalizadas y ordenar preguntas arrastrándolas mediante interfaz nativa (`IonReorder`).
+* **Captura de Coordenadas GPS**: Extrae la posición (Latitud y Longitud) de manera invisible y silenciosa al guardar cada ficha.
+* **Adjunto & Visualización de Fotos**: Integración con cámara para añadir fotografías. Incluye un sistema de **previsualización en miniatura** dentro del formulario con opción de eliminar imágenes individuales (X).
+* **Procesamiento OCR Inteligente**: Motor de IA on-device mediante **Google ML-Kit**, capaz de escanear hojas físicas de "Programa de Riego" y rellenar respuestas interpretando marcas en casillas.
+* **Exportación Avanzada & Renombrado Inteligente**: Genera un archivo `.zip` que contiene:
+    - **Excel (.xlsx)**: Con columnas sociodemográficas completas (Nombre, RUT, Comuna, Sector, etc.) vinculadas a cada respuesta técnica.
+    - **Fotos (.jpg)**: Organizadas con un sistema de nombres inteligente: `nombre_persona_fecha_indice.jpg`, facilitando el procesamiento administrativo posterior.
+* **Botón de Cierre Nativo**: Acceso rápido para salir de la aplicación en todas las pestañas.
 
 ## Tecnologías Utilizadas
 
-* **Frontend Framework**: [React.js](https://reactjs.org/) + [Ionic Framework](https://ionicframework.com/docs/react) (Web Components optimizados para UI Mobile).
-* **Compilador Nativos**: [Capacitor](https://capacitorjs.com/) (Convierte el flujo Web en un paquete `.AAB` / `.APK` nativo para Android).
+* **Frontend Framework**: [React.js](https://reactjs.org/) + [Ionic Framework](https://ionicframework.com/docs/react).
+* **Compilador Nativos**: [Capacitor](https://capacitorjs.com/) (Para paquetes `.APK` / `.AAB` Android).
 * **Exportador Archivos**: [SheetJS](https://sheetjs.com/) (`xlsx`) y [JSZip](https://stuk.github.io/jszip/).
 * **ML-Kit Plugin**: `@pantrist/capacitor-plugin-ml-kit-text-recognition`.
 * **Lenguaje Base**: TypeScript / React TSX.
