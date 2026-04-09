@@ -1,9 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
     IonCard, IonCardHeader, IonCardTitle, IonCardContent, IonItem, IonLabel,
     IonButton, IonInput, IonSelect, IonSelectOption, IonText, IonSpinner, IonIcon
 } from '@ionic/react';
-import { scanOutline } from 'ionicons/icons';
+import { scanOutline, closeCircle } from 'ionicons/icons';
 import { nanoid } from 'nanoid';
 import { Geolocation } from '@capacitor/geolocation';
 import { Camera, CameraResultType, CameraSource } from '@capacitor/camera';
@@ -13,14 +13,38 @@ import { useSurveyContext } from '../context/SurveyContext';
 import { SurveyTemplate, SurveyResponse } from '../types';
 
 export const SurveyForm: React.FC = () => {
-    const { templates, addResponse } = useSurveyContext();
+    const { templates, interviewees, responses, addResponse, updateResponse } = useSurveyContext();
     const [selectedTemplateId, setSelectedTemplateId] = useState<string>('');
+    const [selectedIntervieweeId, setSelectedIntervieweeId] = useState<string>('');
     const [answers, setAnswers] = useState<Record<string, string | number>>({});
     const [photos, setPhotos] = useState<string[]>([]);
     const [isSaving, setIsSaving] = useState(false);
     const [isScanning, setIsScanning] = useState(false);
+    const [existingResponseId, setExistingResponseId] = useState<string | null>(null);
 
     const template = templates.find(t => t.id === selectedTemplateId);
+
+    // Auto-Cargar respuestas previas
+    useEffect(() => {
+        if (selectedTemplateId && selectedIntervieweeId) {
+            const previousResponse = responses.find(r => 
+                r.templateId === selectedTemplateId && r.intervieweeId === selectedIntervieweeId
+            );
+            if (previousResponse) {
+                setExistingResponseId(previousResponse.id);
+                setAnswers(previousResponse.answers || {});
+                setPhotos(previousResponse.photos || []);
+            } else {
+                setExistingResponseId(null);
+                setAnswers({});
+                setPhotos([]);
+            }
+        }
+    }, [selectedTemplateId, selectedIntervieweeId, responses]);
+
+    const handleDeletePhoto = (indexToDelete: number) => {
+        setPhotos(prev => prev.filter((_, i) => i !== indexToDelete));
+    };
 
     const handleAnswerChange = (questionId: string, value: string | number) => {
         setAnswers(prev => ({ ...prev, [questionId]: value }));
@@ -110,6 +134,10 @@ export const SurveyForm: React.FC = () => {
 
     const handleSubmit = async () => {
         if (!template) return;
+        if (!selectedIntervieweeId) {
+            alert('Por favor, selecciona al usuario/entrevistado.');
+            return;
+        }
 
         // Validate that all questions are answered ONLY IF no photos are attached
         if (photos.length === 0) {
@@ -135,20 +163,28 @@ export const SurveyForm: React.FC = () => {
         }
 
         const response: SurveyResponse = {
-            id: nanoid(),
+            id: existingResponseId || nanoid(),
             templateId: template.id,
+            intervieweeId: selectedIntervieweeId,
             answers,
             timestamp: new Date().toISOString(),
             ...(location && { location }),
             ...(photos.length > 0 && { photos })
         };
 
-        addResponse(response);
+        if (existingResponseId) {
+            updateResponse(existingResponseId, response);
+        } else {
+            addResponse(response);
+        }
+
         setAnswers({});
         setPhotos([]);
         setSelectedTemplateId('');
+        setSelectedIntervieweeId('');
+        setExistingResponseId(null);
         setIsSaving(false);
-        alert('¡Encuesta guardada localmente!');
+        alert(existingResponseId ? '¡Respuesta actualizada correctamente!' : '¡Encuesta guardada localmente!');
     };
 
     if (templates.length === 0) {
@@ -182,6 +218,21 @@ export const SurveyForm: React.FC = () => {
                     </IonSelect>
                 </IonItem>
 
+                <IonItem>
+                    <IonLabel position="stacked">Seleccionar Usuario / Entrevistado</IonLabel>
+                    <IonSelect
+                        value={selectedIntervieweeId}
+                        onIonChange={e => setSelectedIntervieweeId(e.detail.value)}
+                        placeholder="Elija la persona..."
+                    >
+                        {[...interviewees]
+                            .sort((a, b) => a.name.localeCompare(b.name))
+                            .map(i => (
+                            <IonSelectOption key={i.id} value={i.id}>{i.name} ({i.comuna})</IonSelectOption>
+                        ))}
+                    </IonSelect>
+                </IonItem>
+
                 {template && (
                     <div className="ion-margin-top">
                         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }} className="ion-padding-horizontal">
@@ -200,6 +251,23 @@ export const SurveyForm: React.FC = () => {
                         {photos.length > 0 && (
                             <div className="ion-padding-horizontal">
                                 <p style={{ margin: '0 0 10px 0', fontSize: '0.9rem', color: 'gray' }}>Fotos adjuntadas: {photos.length}</p>
+                                <div style={{ display: 'flex', gap: '10px', overflowX: 'auto', paddingBottom: '10px' }}>
+                                    {photos.map((p, idx) => (
+                                        <div key={idx} style={{ position: 'relative', flexShrink: 0 }}>
+                                            <img 
+                                                src={"data:image/jpeg;base64," + p} 
+                                                alt={`foto-${idx}`} 
+                                                style={{ width: '80px', height: '80px', objectFit: 'cover', borderRadius: '8px', border: '1px solid #ccc' }} 
+                                            />
+                                            <IonIcon 
+                                                icon={closeCircle} 
+                                                color="danger" 
+                                                style={{ position: 'absolute', top: '-5px', right: '-5px', fontSize: '24px', cursor: 'pointer', background: 'white', borderRadius: '50%' }}
+                                                onClick={() => handleDeletePhoto(idx)}
+                                            />
+                                        </div>
+                                    ))}
+                                </div>
                             </div>
                         )}
 

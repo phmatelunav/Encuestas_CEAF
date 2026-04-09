@@ -1,5 +1,16 @@
 export type QuestionType = 'text' | 'number' | 'multiple_choice';
 
+export interface Interviewee {
+    id: string;
+    name: string;
+    comuna: string;
+    rut: string;
+    telefono: string;
+    sector: string;
+    rubro: string;
+    asesor: string;
+}
+
 export interface Question {
     id: string;
     type: QuestionType;
@@ -17,6 +28,7 @@ export interface SurveyTemplate {
 export interface SurveyResponse {
     id: string;
     templateId: string;
+    intervieweeId: string; // ID del usuario encuestado
     answers: Record<string, string | number>; // questionId -> respuesta
     timestamp: string;
     location?: {

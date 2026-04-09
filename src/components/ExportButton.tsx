@@ -10,7 +10,7 @@ import { useSurveyContext } from '../context/SurveyContext';
 import { SurveyResponse } from '../types';
 
 export const ExportButton: React.FC = () => {
-    const { templates, responses } = useSurveyContext();
+    const { templates, responses, interviewees } = useSurveyContext();
     const [showToast, setShowToast] = useState(false);
     const [toastMessage, setToastMessage] = useState('');
 
@@ -24,12 +24,20 @@ export const ExportButton: React.FC = () => {
         try {
             const dataToExport = responses.map((r: SurveyResponse) => {
                 const template = templates.find(t => t.id === r.templateId);
+                const interviewee = interviewees.find(i => i.id === r.intervieweeId);
 
-                // Base info
+                // Base info merged with Interviewee
                 const row: Record<string, any> = {
                     'ID Respuesta': r.id,
                     'Encuesta': template?.title || 'Desconocida',
                     'Fecha': new Date(r.timestamp).toLocaleString(),
+                    'Usuario Registrado': interviewee?.name || 'Vacio',
+                    'RUT': interviewee?.rut || '',
+                    'Comuna': interviewee?.comuna || '',
+                    'Sector': interviewee?.sector || '',
+                    'Teléfono': interviewee?.telefono || '',
+                    'Rubro': interviewee?.rubro || '',
+                    'Asesor': interviewee?.asesor || '',
                     'Latitud': r.location?.latitude ?? '',
                     'Longitud': r.location?.longitude ?? '',
                     'Fotos Adjuntas (Cantidad)': r.photos?.length || 0
@@ -63,9 +71,18 @@ export const ExportButton: React.FC = () => {
             if (fotosFolder) {
                 responses.forEach((r: SurveyResponse) => {
                     if (r.photos && r.photos.length > 0) {
+                        const interviewee = interviewees.find(i => i.id === r.intervieweeId);
+                        // Limpiar nombre: solo a-z, quitar tildes, sin espacios dobles, reemplazar espacios por guiones bajos
+                        const userStr = interviewee?.name
+                            ? interviewee.name.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().replace(/[^a-z0-9]+/g, '_')
+                            : 'usuario_desc';
+                        
+                        const dateObj = new Date(r.timestamp);
+                        const dateStr = `${dateObj.getDate()}_${dateObj.getMonth() + 1}_${dateObj.getFullYear()}`;
+
                         r.photos.forEach((photoBase64: string, index: number) => {
-                            // Filename format: RespuestaID_1.jpg
-                            const photoName = `${r.id}_${index + 1}.jpg`;
+                            // Filename format: juan_perez_14_3_2026_1.jpg
+                            const photoName = `${userStr}_${dateStr}_${index + 1}.jpg`;
                             fotosFolder.file(photoName, photoBase64, { base64: true });
                         });
                     }

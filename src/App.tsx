@@ -3,6 +3,7 @@ import { IonApp, IonRouterOutlet, IonTabBar, IonTabButton, IonTabs, IonIcon, Ion
 import { IonReactRouter } from '@ionic/react-router';
 import { documentTextOutline, addCircleOutline, barChartOutline } from 'ionicons/icons';
 import TabGestor from './pages/TabGestor';
+import TabPersonas from './pages/TabPersonas';
 import TabRecolector from './pages/TabRecolector';
 import TabResultados from './pages/TabResultados';
 
@@ -65,6 +66,9 @@ const App: React.FC = () => {
               <Route exact path="/tab-gestor">
                 <TabGestor />
               </Route>
+              <Route exact path="/tab-personas">
+                <TabPersonas />
+              </Route>
               <Route exact path="/tab-recolector">
                 <TabRecolector />
               </Route>
@@ -80,6 +84,11 @@ const App: React.FC = () => {
               <IonTabButton tab="tab-gestor" href="/tab-gestor">
                 <IonIcon icon={addCircleOutline} />
                 <IonLabel>Plantillas</IonLabel>
+              </IonTabButton>
+
+              <IonTabButton tab="tab-personas" href="/tab-personas">
+                <IonIcon icon={documentTextOutline} />
+                <IonLabel>Usuarios</IonLabel>
               </IonTabButton>
 
               <IonTabButton tab="tab-recolector" href="/tab-recolector">
